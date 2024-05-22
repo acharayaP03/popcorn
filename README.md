@@ -2,4 +2,4 @@
 
 This is a very simple app which contains reacts useState hooks use for components
 
-!(https://file%2B.vscode-resource.vscode-cdn.net/var/folders/83/x5hj__n55td48w0hclr9rkkm0000gn/T/TemporaryItems/NSIRD_screencaptureui_uNVGpj/Screenshot%202024-05-22%20at%2010.20.24%E2%80%AFPM.png?version%3D1716380441961)
+![Screenshot 2024-05-22 at 10 23 04 PM](https://github.com/acharayaP03/popcorn/assets/42729832/b6cbe587-8792-4f96-85ce-c7c526b9a6c0)
