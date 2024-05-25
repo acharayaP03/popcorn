@@ -12,20 +12,25 @@ const starContainerStyle = {
     gap: '4px'
 }
 
-const textStyle = {
-    lineHeight: '1',
-    margin: '0'
-}
-export default function StarRating({ maxRating}) {
-    const [rating,setRating ] = useState(0);
+
+export default function StarRating({ maxRating= 5, color = '#fcc419', size = 48, className = "", message = [], defaultRating = 0, onSetRating}) {
+    const [rating,setRating ] = useState(defaultRating);
     const [hoverRating, setHoverRating] = useState(0)
     
 
     function handleSetRating(rating) {
         setRating(rating)
+        onSetRating(rating)
+    }
+
+    const textStyle = {
+        lineHeight: '1',
+        margin: '0',
+        color,
+        fontSize: `${size/ 1.5}px`
     }
     return (
-    <div style={containerStyle}>
+    <div style={containerStyle} className={className}>
         <div style={starContainerStyle}>
             { 
                 Array.from({ length: maxRating }).map((_, i) => (
@@ -34,11 +39,19 @@ export default function StarRating({ maxRating}) {
                         starRating={hoverRating ? hoverRating >= i +1 : rating >= i + 1}
                         onHoverIn={() => setHoverRating(i + 1)}
                         onHoverOut={() => setHoverRating(0)}
+                        color={color}
+                        size={size}
                     />
                 ))
             }
         </div>
-        <p style={textStyle}>{ hoverRating || rating || ''}</p>
+        <p style={textStyle}>
+            { 
+                message.length === maxRating ?
+                message[hoverRating ? hoverRating - 1 : rating - 1] :
+                hoverRating || rating || ''
+            }
+        </p>
     </div>
     )
 }
