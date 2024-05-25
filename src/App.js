@@ -4,10 +4,12 @@ import { tempMovieData, tempWatchedData } from "./data";
 import Logo from "./component/Header/Logo";
 import  Search  from "./component/Header/Search";
 import SearchResults from "./component/Header/SearchResults";
-import Button from "./component/globalUi/Button";
 import MovieList from "./component/MovieList/MoviesList";
 import MoviesWatchedList from "./component/MovieList/MoviesWatchedList";
 import Summary from "./component/MovieList/Summary";
+import Navbar from "./layouts/Navbar";
+import ListBox from "./layouts/ListBox";
+import Main from "./layouts/Main";  
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
@@ -24,30 +26,22 @@ export default function App() {
 
   return (
     <>
-      <nav className="nav-bar">
-        <Logo />
-        <Search />
-        <SearchResults movies={movies} />
-      </nav>
+      <Navbar>
+          <Logo />
+          <Search />
+          <SearchResults movies={movies} />
+      </Navbar>
 
-      <main className="main">
-        <div className="box">
-          <Button isOpen={isOpen1} setIsOpen={setIsOpen1} />
-          {isOpen1 && (
-            <MovieList movies={movies} setWatched={setWatched} watched={watched} />
-          )}
-        </div>
-
-        <div className="box">
-        <Button isOpen={isOpen2} setIsOpen={setIsOpen2} />
-          {isOpen2 && (
+      <Main>
+          <ListBox isOpen={isOpen1} setIsOpen={setIsOpen1} element={<MovieList movies={movies} setWatched={setWatched} watched={watched} />}/>
+          <ListBox isOpen={isOpen2} setIsOpen={setIsOpen2} element={
             <>
               <Summary watched={watched} avgImdbRating={avgImdbRating} avgUserRating={avgUserRating} avgRuntime={avgRuntime} />
               <MoviesWatchedList watched={watched}/>
             </>
-          )}
-        </div>
-      </main>
+          }>
+          </ListBox>
+      </Main>
     </>
   );
 }
