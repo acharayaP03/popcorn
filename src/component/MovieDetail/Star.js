@@ -5,9 +5,15 @@ const startStyle = {
     display:"flex",
     cursor:"pointer",
 }
-export default function Star({ onSetRating, starRating}){
+export default function Star({ onSetRating, starRating, onHoverIn, onHoverOut}){
     return (
-        <span role="button" style={startStyle} onClick={onSetRating}>
+        <span 
+            role="button" 
+            style={startStyle} 
+            onClick={onSetRating}
+            onMouseEnter={onHoverIn}
+            onMouseLeave={onHoverOut}
+        >
         {
             starRating ? (
                 <svg
