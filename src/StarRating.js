@@ -18,16 +18,27 @@ const textStyle = {
 }
 export default function StarRating({ maxRating}) {
     const [rating,setRating ] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0)
+    
+
+    function handleSetRating(rating) {
+        setRating(rating)
+    }
     return (
     <div style={containerStyle}>
         <div style={starContainerStyle}>
             { 
                 Array.from({ length: maxRating }).map((_, i) => (
-                    <Star key={i} onSetRating={() => setRating(i + 1)} starRating={rating >= i + 1}/>
+                    <Star 
+                        key={i} onSetRating={() => handleSetRating(i + 1)} 
+                        starRating={hoverRating ? hoverRating >= i +1 : rating >= i + 1}
+                        onHoverIn={() => setHoverRating(i + 1)}
+                        onHoverOut={() => setHoverRating(0)}
+                    />
                 ))
             }
         </div>
-        <p style={textStyle}>{rating || ''}</p>
+        <p style={textStyle}>{ hoverRating || rating || ''}</p>
     </div>
     )
 }
