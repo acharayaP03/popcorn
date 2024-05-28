@@ -12,18 +12,20 @@ import ListBox from './layouts/ListBox';
 import Main from './layouts/Main';
 import Loader from './component/globalUi/Loader';
 import ErrorMessage from './component/globalUi/ErrorMessage';
+import MovieDetails from './component/MovieDetail/MovieDetails';
 
 const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const apiKey = '4fd8b060';
 const searhTerm = 'iron man';
 export default function App() {
 	const [query, setQuery] = useState('iron man');
-	const [movies, setMovies] = useState(tempMovieData);
-	const [watched, setWatched] = useState(tempWatchedData);
+	const [movies, setMovies] = useState([]);
+	const [watched, setWatched] = useState([]);
 	const [isOpen1, setIsOpen1] = useState(true);
 	const [isOpen2, setIsOpen2] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const [selectedId, setSelectedId] = useState(null);
 
 	const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
 	const avgUserRating = average(watched.map((movie) => movie.userRating));
@@ -50,6 +52,14 @@ export default function App() {
 			setLoading(false);
 		}
 	}
+
+	function handleSelectMovie(id) {
+		setSelectedId((selectedId) => (id === selectedId ? null : id));
+	}
+
+	function handleCloseMovie() {
+		setSelectedId(null);
+	}
 	useEffect(() => {
 		if (query.length < 3) {
 			setMovies([]);
@@ -72,19 +82,28 @@ export default function App() {
 					{loading && <Loader />}
 					{error && <ErrorMessage message={error} />}
 					{!loading && !error && (
-						<MovieList movies={movies} setWatched={setWatched} watched={watched} />
+						<MovieList
+							movies={movies}
+							setWatched={setWatched}
+							watched={watched}
+							onSelectMovie={handleSelectMovie}
+						/>
 					)}
 				</ListBox>
 				<ListBox isOpen={isOpen2} setIsOpen={setIsOpen2}>
-					<>
-						<Summary
-							watched={watched}
-							avgImdbRating={avgImdbRating}
-							avgUserRating={avgUserRating}
-							avgRuntime={avgRuntime}
-						/>
-						<MoviesWatchedList watched={watched} />
-					</>
+					{selectedId ? (
+						<MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie} />
+					) : (
+						<>
+							<Summary
+								watched={watched}
+								avgImdbRating={avgImdbRating}
+								avgUserRating={avgUserRating}
+								avgRuntime={avgRuntime}
+							/>
+							<MoviesWatchedList watched={watched} />
+						</>
+					)}
 				</ListBox>
 			</Main>
 		</>
