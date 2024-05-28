@@ -3,22 +3,41 @@ import StarRating from './StarRating';
 import Loader from '../globalUi/Loader';
 
 const apiKey = '4fd8b060';
-export default function MovieDetails({ selectedId, onCloseMovie }) {
+export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 	const [movieDetails, setMovieDetails] = useState({});
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
+	const [userRating, setUserRating] = useState('');
+
+	const hasAlreadyWatched = watched.some((movie) => movie.imdbID === selectedId);
+	const watchedUserRating = watched.find((movie) => movie.imdbID === selectedId)?.userRating;
+
 	const {
 		Title: title,
 		Released: released,
 		Poster: poster,
-
 		Runtime: runtime,
 		Genre: genre,
 		Plot: plot,
 		Director: director,
 		Actors: actors,
 		imdbRating,
+		BoxOffice: boxOffice,
 	} = movieDetails;
+
+	const handleAddWatchList = () => {
+		const newWatchedMovie = {
+			imdbID: selectedId,
+			title,
+			poster,
+			imdbRating: Number(imdbRating),
+			runtime: Number(runtime.split(' ')[0]),
+			userRating,
+		};
+
+		onAddWatched(newWatchedMovie);
+		onCloseMovie();
+	};
 
 	useEffect(() => {
 		const getMovieDetails = async () => {
@@ -68,20 +87,34 @@ export default function MovieDetails({ selectedId, onCloseMovie }) {
 							<p>
 								<span>🎭&nbsp;{genre}</span>
 							</p>
-
-							<p>
-								<span>👥</span>
-								<span>{actors}</span>
-							</p>
 							<p>
 								<span>⭐️</span>
 								<span>{imdbRating} IMDb rating</span>
+							</p>
+
+							<p>
+								<span>🍿</span>
+								<span>{boxOffice}</span>
 							</p>
 						</div>
 					</header>
 					<section>
 						<div className='rating'>
-							<StarRating maxRating={10} size={24} />
+							{hasAlreadyWatched && (
+								<p className='watched'>
+									You already watched this movie and rated {watchedUserRating} ⭐️
+								</p>
+							)}
+							{!hasAlreadyWatched && (
+								<>
+									<StarRating maxRating={10} size={24} onSetRating={setUserRating} />
+									{userRating > 0 && (
+										<button className='btn-add' onClick={handleAddWatchList}>
+											+ Add to watchlist
+										</button>
+									)}
+								</>
+							)}
 						</div>
 						<p>
 							<em>{plot}</em>
