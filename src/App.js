@@ -60,6 +60,14 @@ export default function App() {
 	function handleCloseMovie() {
 		setSelectedId(null);
 	}
+
+	function handleWatchedMovies(movie) {
+		setWatched((watched) => [...watched, movie]);
+	}
+
+	function handleDeleteWatcedMovie(id) {
+		setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+	}
 	useEffect(() => {
 		if (query.length < 3) {
 			setMovies([]);
@@ -92,7 +100,12 @@ export default function App() {
 				</ListBox>
 				<ListBox isOpen={isOpen2} setIsOpen={setIsOpen2}>
 					{selectedId ? (
-						<MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie} />
+						<MovieDetails
+							selectedId={selectedId}
+							onCloseMovie={handleCloseMovie}
+							onAddWatched={handleWatchedMovies}
+							watched={watched}
+						/>
 					) : (
 						<>
 							<Summary
@@ -101,7 +114,7 @@ export default function App() {
 								avgUserRating={avgUserRating}
 								avgRuntime={avgRuntime}
 							/>
-							<MoviesWatchedList watched={watched} />
+							<MoviesWatchedList watched={watched} removeWatchedMovie={handleDeleteWatcedMovie} />
 						</>
 					)}
 				</ListBox>
