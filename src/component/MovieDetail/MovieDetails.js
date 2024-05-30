@@ -64,6 +64,28 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 		};
 		getMovieDetails();
 	}, [selectedId]);
+
+	useEffect(() => {
+		if (!title) return;
+		document.title = `Movie | ${title}`;
+
+		// clean up effect
+		return () => {
+			document.title = 'popcorn';
+		};
+	}, [title]);
+
+	useEffect(() => {
+		const callback = (event) => {
+			if (event.key === 'Escape') {
+				onCloseMovie();
+			}
+		};
+		document.addEventListener('keydown', callback);
+		return () => {
+			document.removeEventListener('keydown', callback);
+		};
+	}, [onCloseMovie]);
 	return (
 		<div className='details'>
 			{loading && <Loader />}
