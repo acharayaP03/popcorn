@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { tempMovieData, tempWatchedData } from './data';
 import Logo from './component/Header/Logo';
 import Search from './component/Header/Search';
 import SearchResults from './component/Header/SearchResults';
@@ -18,7 +17,9 @@ const average = (arr) => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length
 const apiKey = '4fd8b060';
 const searhTerm = 'iron man';
 export default function App() {
-	const [query, setQuery] = useState('iron man');
+	const controller = new AbortController();
+
+	const [query, setQuery] = useState('');
 	const [movies, setMovies] = useState([]);
 	const [watched, setWatched] = useState([]);
 	const [isOpen1, setIsOpen1] = useState(true);
@@ -31,11 +32,13 @@ export default function App() {
 	const avgUserRating = average(watched.map((movie) => movie.userRating));
 	const avgRuntime = average(watched.map((movie) => movie.runtime));
 
-	async function fetchMovies(query = searhTerm) {
+	async function fetchMovies(query = searhTerm, abortRequest = {}) {
 		try {
 			setLoading(true);
 			setError('');
-			const response = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&s=${query}`);
+			const response = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&s=${query}`, {
+				...abortRequest,
+			});
 
 			if (!response.ok)
 				throw new Error('Something went wrong while fetching movies... please try again later.');
@@ -45,9 +48,12 @@ export default function App() {
 				throw new Error('Could not find any movies with that name... please try again.');
 
 			setMovies(data.Search);
+			setError('');
 		} catch (error) {
-			console.error(error.message);
-			setError(error.message);
+			if (error.name !== 'AbortError') {
+				console.log(error.message);
+				setError(error.message);
+			}
 		} finally {
 			setLoading(false);
 		}
@@ -74,7 +80,12 @@ export default function App() {
 			setError('');
 			return;
 		}
-		fetchMovies(query);
+		handleCloseMovie(); // close movie details when searching for a new movie
+		fetchMovies(query, { signal: controller.signal });
+
+		return () => {
+			controller.abort(); // abort earlier request when a new one is made
+		};
 	}, [query]);
 
 	return (
