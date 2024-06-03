@@ -21,12 +21,16 @@ export default function App() {
 
 	const [query, setQuery] = useState('');
 	const [movies, setMovies] = useState([]);
-	const [watched, setWatched] = useState([]);
 	const [isOpen1, setIsOpen1] = useState(true);
 	const [isOpen2, setIsOpen2] = useState(true);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
 	const [selectedId, setSelectedId] = useState(null);
+
+	const [watched, setWatched] = useState(() => {
+		const watched = localStorage.getItem('watched');
+		return JSON.parse(watched);
+	});
 
 	const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
 	const avgUserRating = average(watched.map((movie) => movie.userRating));
@@ -74,6 +78,11 @@ export default function App() {
 	function handleDeleteWatcedMovie(id) {
 		setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
 	}
+
+	useEffect(() => {
+		localStorage.setItem('watched', JSON.stringify(watched));
+	}, [watched]);
+
 	useEffect(() => {
 		if (query.length < 3) {
 			setMovies([]);
