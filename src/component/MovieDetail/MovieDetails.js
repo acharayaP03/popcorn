@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useKey } from '../../hooks/useKey';
 import StarRating from './StarRating';
 import Loader from '../globalUi/Loader';
 
@@ -9,7 +10,7 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 	const [error, setError] = useState('');
 	const [userRating, setUserRating] = useState('');
 
-	const countRef = useRef(0);
+	let countRef = useRef(0);
 
 	const hasAlreadyWatched = watched.some((movie) => movie.imdbID === selectedId);
 	const watchedUserRating = watched.find((movie) => movie.imdbID === selectedId)?.userRating;
@@ -42,9 +43,12 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 		onCloseMovie();
 	};
 
-	useEffect(function () {
-		if (userRating) countRef++;
-	}, []);
+	useEffect(
+		function () {
+			if (userRating) countRef++;
+		},
+		[userRating],
+	);
 
 	useEffect(() => {
 		const getMovieDetails = async () => {
@@ -81,18 +85,8 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 			document.title = 'popcorn';
 		};
 	}, [title]);
+	useKey('Escape', onCloseMovie);
 
-	useEffect(() => {
-		const callback = (event) => {
-			if (event.key === 'Escape') {
-				onCloseMovie();
-			}
-		};
-		document.addEventListener('keydown', callback);
-		return () => {
-			document.removeEventListener('keydown', callback);
-		};
-	}, [onCloseMovie]);
 	return (
 		<div className='details'>
 			{loading && <Loader />}
