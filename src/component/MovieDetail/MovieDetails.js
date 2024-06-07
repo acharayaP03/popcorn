@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useKey } from '../../hooks/useKey';
 import StarRating from './StarRating';
 import Loader from '../globalUi/Loader';
 
@@ -8,6 +9,8 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState('');
 	const [userRating, setUserRating] = useState('');
+
+	let countRef = useRef(0);
 
 	const hasAlreadyWatched = watched.some((movie) => movie.imdbID === selectedId);
 	const watchedUserRating = watched.find((movie) => movie.imdbID === selectedId)?.userRating;
@@ -33,11 +36,19 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 			imdbRating: Number(imdbRating),
 			runtime: Number(runtime.split(' ')[0]),
 			userRating,
+			countRatingDecisions: countRef.current,
 		};
 
 		onAddWatched(newWatchedMovie);
 		onCloseMovie();
 	};
+
+	useEffect(
+		function () {
+			if (userRating) countRef++;
+		},
+		[userRating],
+	);
 
 	useEffect(() => {
 		const getMovieDetails = async () => {
@@ -64,6 +75,18 @@ export default function MovieDetails({ selectedId, onCloseMovie, onAddWatched, w
 		};
 		getMovieDetails();
 	}, [selectedId]);
+
+	useEffect(() => {
+		if (!title) return;
+		document.title = `Movie | ${title}`;
+
+		// clean up effect
+		return () => {
+			document.title = 'popcorn';
+		};
+	}, [title]);
+	useKey('Escape', onCloseMovie);
+
 	return (
 		<div className='details'>
 			{loading && <Loader />}
